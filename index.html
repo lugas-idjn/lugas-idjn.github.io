@@ -1,1 +1,631 @@
-<h1>Welcome to my website</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Egg Prices & Minimum Wages by Country</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #15151a;
+    --surface2: #1c1c24;
+    --border: #2a2a38;
+    --text: #f0ede8;
+    --text-muted: #7a7a9a;
+    --text-dim: #4a4a60;
+
+    /* Continent colors */
+    --europe: #4fc3f7;
+    --asia: #f06292;
+    --americas: #81c784;
+    --africa: #ffb74d;
+    --oceania: #ce93d8;
+    --middle-east: #ff8a65;
+
+    --accent: #f5c842;
+    --bar-h: 22px;
+    --gap: 4px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 48px 48px 24px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '🥚';
+    position: absolute;
+    right: -20px; top: -30px;
+    font-size: 220px;
+    opacity: 0.04;
+    pointer-events: none;
+    user-select: none;
+  }
+  .header-kicker {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(22px, 4vw, 44px);
+    font-weight: 800;
+    line-height: 1.1;
+    max-width: 700px;
+  }
+  h1 span { color: var(--accent); }
+  .header-sub {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    max-width: 620px;
+    line-height: 1.6;
+  }
+
+  /* ── Stats strip ── */
+  .stats-strip {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .stat {
+    flex: 1;
+    min-width: 130px;
+    padding: 18px 28px;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-label { font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
+  .stat-value.gold { color: var(--accent); }
+
+  /* ── Controls ── */
+  .controls {
+    padding: 20px 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .ctrl-group { display: flex; gap: 4px; align-items: center; }
+  .ctrl-label { font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-right: 6px; }
+  .btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 7px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .btn:hover { border-color: var(--text-muted); color: var(--text); }
+  .btn.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+  .sep { width: 1px; height: 28px; background: var(--border); }
+
+  /* ── Legend ── */
+  .legend {
+    padding: 16px 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: color 0.15s; }
+  .legend-item:hover { color: var(--text); }
+  .legend-item.dimmed { opacity: 0.3; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── Chart area ── */
+  .chart-wrap {
+    padding: 24px 48px 48px;
+  }
+  .metric-tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 24px;
+  }
+  .mtab {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mtab.active { background: var(--surface2); color: var(--text); border-color: var(--text-dim); }
+  .mtab:hover:not(.active) { border-color: var(--text-muted); }
+
+  /* ── Bar rows ── */
+  .chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+  }
+  .bar-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 80px;
+    align-items: center;
+    gap: 10px;
+    transition: opacity 0.2s;
+  }
+  .bar-row.hidden-continent { opacity: 0.08; }
+  .country-name {
+    font-size: 11px;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-muted);
+    cursor: default;
+    transition: color 0.15s;
+  }
+  .bar-row:hover .country-name { color: var(--text); }
+  .bar-track {
+    position: relative;
+    height: var(--bar-h);
+    background: var(--surface2);
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 2px;
+    background: rgba(255,255,255,0.3);
+  }
+  /* second bar (egg price overlay) */
+  .bar-fill-b {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 0;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.05s;
+    opacity: 0.35;
+  }
+  .bar-value {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  /* ── Tooltip ── */
+  #tooltip {
+    position: fixed;
+    pointer-events: none;
+    background: #1e1e28;
+    border: 1px solid var(--border);
+    padding: 14px 18px;
+    font-size: 12px;
+    line-height: 1.8;
+    max-width: 280px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.1s;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  #tooltip.show { opacity: 1; }
+  .tt-country { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+  .tt-row { display: flex; justify-content: space-between; gap: 20px; color: var(--text-muted); }
+  .tt-row span:last-child { color: var(--text); font-weight: 500; }
+  .tt-continent { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+
+  /* ── Dual bars note ── */
+  .dual-note {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .dn-swatch { display: inline-flex; align-items: center; gap: 6px; }
+  .dn-box { width: 24px; height: 10px; display: inline-block; }
+
+  /* ── Axis ── */
+  .axis-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 80px;
+    gap: 10px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  .axis-ticks {
+    position: relative;
+    height: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .axis-tick {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .axis-tick::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 1px;
+    height: 4px;
+    background: var(--border);
+  }
+
+  /* ── Footer ── */
+  footer {
+    padding: 24px 48px;
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  @media (max-width: 700px) {
+    header, .controls, .legend, .chart-wrap, footer { padding-left: 16px; padding-right: 16px; }
+    .bar-row { grid-template-columns: 90px 1fr 64px; }
+    .stat { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-kicker">Global Economics · 2025–2026</div>
+  <h1>Egg Prices &amp; <span>Minimum Wages</span><br>by Country</h1>
+  <p class="header-sub">79 countries compared by egg price per dozen, minimum wage per month, and egg-buying power (dozens purchasable on minimum wage). Hover any bar for details.</p>
+</header>
+
+<div class="stats-strip">
+  <div class="stat"><div class="stat-label">Countries</div><div class="stat-value">79</div></div>
+  <div class="stat"><div class="stat-label">Avg Egg Price</div><div class="stat-value gold">$3.33</div></div>
+  <div class="stat"><div class="stat-label">Most Expensive</div><div class="stat-value">$8.12 <span style="font-size:13px;color:var(--text-muted)">🇨🇭</span></div></div>
+  <div class="stat"><div class="stat-label">Cheapest</div><div class="stat-value">$1.40 <span style="font-size:13px;color:var(--text-muted)">🇵🇰</span></div></div>
+  <div class="stat"><div class="stat-label">Avg Min. Wage</div><div class="stat-value">$975/mo</div></div>
+  <div class="stat"><div class="stat-label">Highest Wage</div><div class="stat-value">$4,675 <span style="font-size:13px;color:var(--text-muted)">🇨🇭</span></div></div>
+</div>
+
+<div class="controls">
+  <span class="ctrl-label">Sort by</span>
+  <div class="ctrl-group">
+    <button class="btn active" id="sort-wage" onclick="setSort('wage')">Min. Wage ↓</button>
+    <button class="btn" id="sort-egg" onclick="setSort('egg')">Egg Price ↓</button>
+    <button class="btn" id="sort-power" onclick="setSort('power')">Buying Power ↓</button>
+    <button class="btn" id="sort-country" onclick="setSort('country')">Country A–Z</button>
+  </div>
+  <div class="sep"></div>
+  <span class="ctrl-label">Show</span>
+  <div class="ctrl-group">
+    <button class="btn mtab2 active" id="show-wage" onclick="setMetric('wage')">Wage</button>
+    <button class="btn mtab2" id="show-egg" onclick="setMetric('egg')">Egg Price</button>
+    <button class="btn mtab2" id="show-both" onclick="setMetric('both')">Both</button>
+    <button class="btn mtab2" id="show-power" onclick="setMetric('power')">Buying Power</button>
+  </div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<div class="chart-wrap">
+  <div class="dual-note" id="dual-note" style="display:none">
+    <span class="dn-swatch"><span class="dn-box" style="background:var(--europe)"></span> Solid = Min. Wage</span>
+    <span class="dn-swatch"><span class="dn-box" style="opacity:0.45;background:var(--accent)"></span> Overlay = Egg Price (same scale)</span>
+  </div>
+  <div class="axis-row" id="axis-row">
+    <div></div>
+    <div class="axis-ticks" id="axis-ticks"></div>
+    <div></div>
+  </div>
+  <div class="chart" id="chart"></div>
+</div>
+
+<footer>
+  Sources: Egg prices — GlobalProductPrices.com (Jan 2026) · Minimum wages — WageIndicator, WorldPopulationReview, Deel, Playroll, Employsome, CXC Global, Mauve Group, and others (2025–2026). CBA/Sector = collective bargaining average floor.
+</footer>
+
+<div id="tooltip"></div>
+
+<script>
+const CONTINENTS = {
+  Europe: { color: '#4fc3f7', countries: ['Switzerland','Norway','UK','Ireland','Germany','France','Belgium','Netherlands','Sweden','Denmark','Austria','Finland','Spain','Italy','Portugal','Greece','Poland','Czechia','Slovakia','Lithuania','Latvia','Romania','Hungary','Croatia','Slovenia','Serbia','Ukraine','Russia'] },
+  Asia: { color: '#f06292', countries: ['China','Japan','South Korea','India','Bangladesh','Pakistan','Vietnam','Thailand','Philippines','Indonesia','Malaysia','Singapore','Kazakhstan','Azerbaijan','Sri Lanka','Kyrgyzstan'] },
+  Americas: { color: '#81c784', countries: ['USA','Canada','Brazil','Mexico','Chile','Colombia','Peru','Uruguay','Ecuador','Argentina','Guatemala','Bolivia','Paraguay','Costa Rica','Dominican Republic','Puerto Rico'] },
+  Africa: { color: '#ffb74d', countries: ['South Africa','Ghana','Nigeria','Kenya','Tanzania','Ivory Coast','Cameroon','Morocco','Egypt','Tunisia','Zambia','Uganda'] },
+  Oceania: { color: '#ce93d8', countries: ['Australia','New Zealand'] },
+  'Middle East': { color: '#ff8a65', countries: ['Israel','Saudi Arabia','UA Emirates','Kuwait','Jordan','Turkey'] },
+};
+
+function getContinent(country) {
+  for (const [name, data] of Object.entries(CONTINENTS)) {
+    if (data.countries.includes(country)) return name;
+  }
+  return 'Asia'; // fallback
+}
+
+const RAW = [
+  {c:'Switzerland',e:8.12,w:4675,p:575.7,flag:'🇨🇭'},
+  {c:'Norway',e:7.18,w:1869,p:260.3,flag:'🇳🇴'},
+  {c:'Australia',e:7.18,w:2691,p:374.8,flag:'🇦🇺'},
+  {c:'New Zealand',e:7.06,w:2316,p:328.0,flag:'🇳🇿'},
+  {c:'Uruguay',e:6.25,w:605,p:96.8,flag:'🇺🇾'},
+  {c:'Czechia',e:5.17,w:1094.9,p:211.8,flag:'🇨🇿'},
+  {c:'Sweden',e:5.04,w:2439,p:483.9,flag:'🇸🇪'},
+  {c:'Belgium',e:5.02,w:2502.6,p:498.5,flag:'🇧🇪'},
+  {c:'Denmark',e:4.91,w:2250,p:458.2,flag:'🇩🇰'},
+  {c:'Austria',e:4.90,w:1651,p:336.9,flag:'🇦🇹'},
+  {c:'UK',e:4.87,w:2849,p:585.0,flag:'🇬🇧'},
+  {c:'Ireland',e:4.78,w:2879.5,p:602.4,flag:'🇮🇪'},
+  {c:'Hong Kong',e:4.71,w:530,p:112.5,flag:'🇭🇰'},
+  {c:'Italy',e:4.65,w:1470,p:316.1,flag:'🇮🇹'},
+  {c:'Germany',e:4.62,w:2829.4,p:612.4,flag:'🇩🇪'},
+  {c:'USA',e:4.62,w:1256.2,p:271.9,flag:'🇺🇸'},
+  {c:'Greece',e:4.57,w:1216.9,p:266.3,flag:'🇬🇷'},
+  {c:'Israel',e:4.47,w:1680.2,p:375.9,flag:'🇮🇱'},
+  {c:'Ghana',e:4.46,w:32,p:7.2,flag:'🇬🇭'},
+  {c:'France',e:4.27,w:2160.1,p:505.9,flag:'🇫🇷'},
+  {c:'Slovakia',e:4.20,w:1084.2,p:258.1,flag:'🇸🇰'},
+  {c:'Lithuania',e:4.20,w:1366.2,p:325.3,flag:'🇱🇹'},
+  {c:'Latvia',e:4.06,w:924.3,p:227.7,flag:'🇱🇻'},
+  {c:'Romania',e:4.04,w:942,p:233.2,flag:'🇷🇴'},
+  {c:'Poland',e:3.96,w:1349.6,p:340.8,flag:'🇵🇱'},
+  {c:'Chile',e:3.96,w:555.5,p:140.3,flag:'🇨🇱'},
+  {c:'Finland',e:3.82,w:1613,p:422.3,flag:'🇫🇮'},
+  {c:'Spain',e:3.80,w:1636.4,p:430.6,flag:'🇪🇸'},
+  {c:'Hungary',e:3.80,w:993,p:261.3,flag:'🇭🇺'},
+  {c:'Portugal',e:3.61,w:1271.4,p:352.2,flag:'🇵🇹'},
+  {c:'Puerto Rico',e:3.58,w:1680,p:469.3,flag:'🇵🇷'},
+  {c:'Morocco',e:3.51,w:332.5,p:94.7,flag:'🇲🇦'},
+  {c:'Netherlands',e:3.45,w:2249,p:651.9,flag:'🇳🇱'},
+  {c:'Croatia',e:3.44,w:1244.2,p:361.7,flag:'🇭🇷'},
+  {c:'South Africa',e:3.20,w:268.8,p:84.0,flag:'🇿🇦'},
+  {c:'Mexico',e:3.16,w:330,p:104.4,flag:'🇲🇽'},
+  {c:'South Korea',e:3.04,w:1182,p:388.8,flag:'🇰🇷'},
+  {c:'Japan',e:2.96,w:1244.7,p:420.5,flag:'🇯🇵'},
+  {c:'Slovenia',e:2.93,w:1514.3,p:516.8,flag:'🇸🇮'},
+  {c:'Canada',e:2.89,w:2191.6,p:758.3,flag:'🇨🇦'},
+  {c:'Colombia',e:2.73,w:384.4,p:140.8,flag:'🇨🇴'},
+  {c:'UA Emirates',e:2.72,w:1634,p:600.7,flag:'🇦🇪'},
+  {c:'Ivory Coast',e:2.71,w:124.2,p:45.8,flag:'🇨🇮'},
+  {c:'Singapore',e:2.68,w:1415,p:528.0,flag:'🇸🇬'},
+  {c:'Nigeria',e:2.66,w:45.5,p:17.1,flag:'🇳🇬'},
+  {c:'Malaysia',e:2.60,w:430.5,p:165.6,flag:'🇲🇾'},
+  {c:'Serbia',e:2.57,w:881.6,p:343.0,flag:'🇷🇸'},
+  {c:'Thailand',e:2.54,w:252.6,p:99.4,flag:'🇹🇭'},
+  {c:'Jordan',e:2.54,w:409,p:161.0,flag:'🇯🇴'},
+  {c:'Peru',e:2.49,w:331.8,p:133.3,flag:'🇵🇪'},
+  {c:'Turkey',e:2.47,w:759.4,p:307.4,flag:'🇹🇷'},
+  {c:'Brazil',e:2.42,w:303.8,p:125.5,flag:'🇧🇷'},
+  {c:'Tanzania',e:2.37,w:32,p:13.5,flag:'🇹🇿'},
+  {c:'Saudi Arabia',e:2.34,w:1067,p:456.0,flag:'🇸🇦'},
+  {c:'Ecuador',e:2.33,w:482,p:206.9,flag:'🇪🇨'},
+  {c:'Cameroon',e:2.32,w:60.1,p:25.9,flag:'🇨🇲'},
+  {c:'China',e:2.28,w:391.7,p:171.8,flag:'🇨🇳'},
+  {c:'Philippines',e:2.23,w:254.6,p:114.2,flag:'🇵🇭'},
+  {c:'Russia',e:2.21,w:242.5,p:109.7,flag:'🇷🇺'},
+  {c:'Kuwait',e:2.21,w:195.4,p:88.4,flag:'🇰🇼'},
+  {c:'Ukraine',e:2.10,w:202.9,p:96.6,flag:'🇺🇦'},
+  {c:'Vietnam',e:2.10,w:212.4,p:101.1,flag:'🇻🇳'},
+  {c:'Paraguay',e:2.09,w:405.9,p:194.2,flag:'🇵🇾'},
+  {c:'Tunisia',e:2.01,w:149,p:74.1,flag:'🇹🇳'},
+  {c:'Dominican Republic',e:2.01,w:269.9,p:134.3,flag:'🇩🇴'},
+  {c:'Costa Rica',e:1.94,w:726,p:374.2,flag:'🇨🇷'},
+  {c:'India',e:1.89,w:43.2,p:22.9,flag:'🇮🇳'},
+  {c:'Kenya',e:1.89,w:116.9,p:61.9,flag:'🇰🇪'},
+  {c:'Guatemala',e:1.89,w:513.1,p:271.5,flag:'🇬🇹'},
+  {c:'Uganda',e:1.83,w:35.1,p:19.2,flag:'🇺🇬'},
+  {c:'Bolivia',e:1.81,w:469,p:259.1,flag:'🇧🇴'},
+  {c:'Kazakhstan',e:1.80,w:161.5,p:89.7,flag:'🇰🇿'},
+  {c:'Azerbaijan',e:1.80,w:235.3,p:130.7,flag:'🇦🇿'},
+  {c:'Indonesia',e:1.79,w:343.8,p:192.1,flag:'🇮🇩'},
+  {c:'Zambia',e:1.77,w:52.8,p:29.8,flag:'🇿🇲'},
+  {c:'Sri Lanka',e:1.69,w:56.5,p:33.4,flag:'🇱🇰'},
+  {c:'Egypt',e:1.57,w:146.7,p:93.4,flag:'🇪🇬'},
+  {c:'Bangladesh',e:1.55,w:101.5,p:65.5,flag:'🇧🇩'},
+  {c:'Pakistan',e:1.40,w:129.9,p:92.8,flag:'🇵🇰'},
+];
+
+// Attach continent
+RAW.forEach(d => d.continent = getContinent(d.c));
+
+let currentSort = 'wage';
+let currentMetric = 'wage';
+let hiddenContinents = new Set();
+
+const SORT_FNS = {
+  wage: (a,b) => b.w - a.w,
+  egg: (a,b) => b.e - a.e,
+  power: (a,b) => b.p - a.p,
+  country: (a,b) => a.c.localeCompare(b.c),
+};
+
+function setSort(s) {
+  currentSort = s;
+  ['wage','egg','power','country'].forEach(x => {
+    document.getElementById('sort-'+x).classList.toggle('active', x === s);
+  });
+  render();
+}
+
+function setMetric(m) {
+  currentMetric = m;
+  ['wage','egg','both','power'].forEach(x => {
+    document.getElementById('show-'+x).classList.toggle('active', x === m);
+  });
+  document.getElementById('dual-note').style.display = m === 'both' ? 'flex' : 'none';
+  render();
+}
+
+function buildLegend() {
+  const leg = document.getElementById('legend');
+  leg.innerHTML = '';
+  for (const [name, data] of Object.entries(CONTINENTS)) {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.dataset.continent = name;
+    item.innerHTML = `<span class="legend-dot" style="background:${data.color}"></span>${name}`;
+    item.onclick = () => toggleContinent(name);
+    leg.appendChild(item);
+  }
+}
+
+function toggleContinent(name) {
+  if (hiddenContinents.has(name)) hiddenContinents.delete(name);
+  else hiddenContinents.add(name);
+  document.querySelectorAll('.legend-item').forEach(el => {
+    el.classList.toggle('dimmed', hiddenContinents.has(el.dataset.continent));
+  });
+  document.querySelectorAll('.bar-row').forEach(el => {
+    el.classList.toggle('hidden-continent', hiddenContinents.has(el.dataset.continent));
+  });
+}
+
+function getMetricConfig(metric, data) {
+  const sorted = [...data];
+  if (metric === 'wage') {
+    const max = Math.max(...sorted.map(d=>d.w));
+    return { max, getValue: d=>d.w, format: v=>'$'+v.toLocaleString(undefined,{maximumFractionDigits:0})+'/mo', label:'Min. Wage (USD/month)' };
+  } else if (metric === 'egg') {
+    const max = Math.max(...sorted.map(d=>d.e));
+    return { max, getValue: d=>d.e, format: v=>'$'+v.toFixed(2)+'/doz', label:'Egg Price (USD/dozen)' };
+  } else if (metric === 'power') {
+    const max = Math.max(...sorted.map(d=>d.p));
+    return { max, getValue: d=>d.p, format: v=>Math.round(v)+' doz', label:'Dozens of Eggs Buyable on Min. Wage' };
+  } else { // both
+    const max = Math.max(...sorted.map(d=>d.w));
+    return { max, getValue: d=>d.w, format: v=>'$'+v.toLocaleString(undefined,{maximumFractionDigits:0})+'/mo', label:'Min. Wage (USD/month)' };
+  }
+}
+
+function buildAxis(cfg) {
+  const ticks = document.getElementById('axis-ticks');
+  ticks.innerHTML = '';
+  const steps = 5;
+  for (let i = 0; i <= steps; i++) {
+    const val = (cfg.max / steps) * i;
+    const pct = (val / cfg.max) * 100;
+    const tick = document.createElement('span');
+    tick.className = 'axis-tick';
+    tick.style.left = pct + '%';
+    tick.textContent = cfg.format(val).replace('/mo','').replace('/doz','');
+    ticks.appendChild(tick);
+  }
+}
+
+function render() {
+  const data = [...RAW].sort(SORT_FNS[currentSort]);
+  const cfg = getMetricConfig(currentMetric, data);
+  buildAxis(cfg);
+
+  const chart = document.getElementById('chart');
+  chart.innerHTML = '';
+
+  data.forEach(d => {
+    const cColor = CONTINENTS[d.continent]?.color || '#888';
+    const row = document.createElement('div');
+    row.className = 'bar-row' + (hiddenContinents.has(d.continent) ? ' hidden-continent' : '');
+    row.dataset.continent = d.continent;
+
+    const namePct = (cfg.getValue(d) / cfg.max * 100).toFixed(2);
+    const eggPct = (d.e / cfg.max * 100).toFixed(2);
+
+    row.innerHTML = `
+      <div class="country-name">${d.flag} ${d.c}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="background:${cColor};width:0%" data-pct="${namePct}">
+          ${currentMetric === 'both' ? `<div class="bar-fill-b" style="background:var(--accent);width:0%" data-pct="${eggPct}"></div>` : ''}
+        </div>
+      </div>
+      <div class="bar-value">${cfg.format(cfg.getValue(d))}</div>
+    `;
+
+    row.addEventListener('mouseenter', (ev) => showTooltip(ev, d, cColor));
+    row.addEventListener('mousemove', moveTooltip);
+    row.addEventListener('mouseleave', hideTooltip);
+
+    chart.appendChild(row);
+  });
+
+  // Animate bars after paint
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      chart.querySelectorAll('.bar-fill').forEach(el => {
+        el.style.width = el.dataset.pct + '%';
+        const sub = el.querySelector('.bar-fill-b');
+        if (sub) {
+          setTimeout(() => sub.style.width = sub.dataset.pct + '%', 80);
+        }
+      });
+    });
+  });
+}
+
+const tooltip = document.getElementById('tooltip');
+
+function showTooltip(e, d, color) {
+  const wageType = ['Switzerland','Norway','Sweden','Denmark','Austria','Finland','Italy','Singapore'].includes(d.c) ? 'CBA floor' : 'Statutory';
+  tooltip.innerHTML = `
+    <div class="tt-continent" style="color:${color}">${d.continent}</div>
+    <div class="tt-country">${d.flag} ${d.c}</div>
+    <div class="tt-row"><span>Egg price</span><span>$${d.e.toFixed(2)}/doz</span></div>
+    <div class="tt-row"><span>Min. wage</span><span>$${d.w.toLocaleString(undefined,{maximumFractionDigits:0})}/mo</span></div>
+    <div class="tt-row"><span>Buying power</span><span>${Math.round(d.p)} doz/mo</span></div>
+    <div class="tt-row"><span>Days wage/doz</span><span>${(d.e/d.w*30).toFixed(2)} days</span></div>
+    <div class="tt-row"><span>Wage type</span><span>${wageType}</span></div>
+  `;
+  tooltip.classList.add('show');
+  moveTooltip(e);
+}
+
+function moveTooltip(e) {
+  const x = e.clientX + 16, y = e.clientY + 16;
+  tooltip.style.left = Math.min(x, window.innerWidth - 300) + 'px';
+  tooltip.style.top = Math.min(y, window.innerHeight - 200) + 'px';
+}
+
+function hideTooltip() { tooltip.classList.remove('show'); }
+
+buildLegend();
+render();
+</script>
+</body>
+</html>
