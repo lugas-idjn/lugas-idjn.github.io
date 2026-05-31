@@ -40,7 +40,7 @@
 
   /* ── Header ── */
   header {
-    padding: 48px 48px 24px;
+    padding: 28px 48px 16px;
     border-bottom: 1px solid var(--border);
     position: relative;
     overflow: hidden;
@@ -65,18 +65,18 @@
   }
   h1 {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(22px, 4vw, 44px);
+    font-size: clamp(20px, 3vw, 34px);
     font-weight: 800;
     line-height: 1.1;
     max-width: 700px;
   }
   h1 span { color: var(--accent); }
   .header-sub {
-    margin-top: 10px;
+    margin-top: 6px;
     font-size: 11px;
     color: var(--text-muted);
     max-width: 620px;
-    line-height: 1.6;
+    line-height: 1.5;
   }
 
   /* ── Stats strip ── */
@@ -88,27 +88,24 @@
   }
   .stat {
     flex: 1;
-    min-width: 130px;
-    padding: 18px 28px;
+    min-width: 120px;
+    padding: 12px 20px;
     border-right: 1px solid var(--border);
   }
   .stat:last-child { border-right: none; }
-  .stat-label { font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
-  .stat-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
+  .stat-label { font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
   .stat-value.gold { color: var(--accent); }
 
   /* ── Controls ── */
   .controls {
-    padding: 20px 48px;
+    padding: 12px 48px;
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
-    position: sticky;
-    top: 0;
-    z-index: 10;
   }
   .ctrl-group { display: flex; gap: 4px; align-items: center; }
   .ctrl-label { font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-right: 6px; }
@@ -134,10 +131,10 @@
 
   /* ── Legend ── */
   .legend {
-    padding: 16px 48px;
+    padding: 10px 48px;
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 14px;
     border-bottom: 1px solid var(--border);
   }
   .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: color 0.15s; }
@@ -147,25 +144,8 @@
 
   /* ── Chart area ── */
   .chart-wrap {
-    padding: 24px 48px 48px;
+    padding: 16px 48px 24px;
   }
-  .metric-tabs {
-    display: flex;
-    gap: 2px;
-    margin-bottom: 24px;
-  }
-  .mtab {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    padding: 8px 16px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .mtab.active { background: var(--surface2); color: var(--text); border-color: var(--text-dim); }
-  .mtab:hover:not(.active) { border-color: var(--text-muted); }
 
   /* ── Bar rows ── */
   .chart {
@@ -175,7 +155,7 @@
   }
   .bar-row {
     display: grid;
-    grid-template-columns: 140px 1fr 80px;
+    grid-template-columns: 148px 1fr 86px;
     align-items: center;
     gap: 10px;
     transition: opacity 0.2s;
@@ -192,6 +172,41 @@
     transition: color 0.15s;
   }
   .bar-row:hover .country-name { color: var(--text); }
+
+  /* rank badge */
+  .rank-badge {
+    display: inline-block;
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 2px;
+    margin-right: 4px;
+    font-weight: 600;
+    vertical-align: middle;
+    letter-spacing: 0;
+  }
+  .rank-top { background: rgba(245,200,66,0.15); color: var(--accent); }
+  .rank-bot { background: rgba(240,98,146,0.15); color: #f06292; }
+  .rank-id  { background: rgba(129,199,132,0.12); color: #81c784; }
+
+  /* section divider */
+  .divider-row {
+    display: grid;
+    grid-template-columns: 148px 1fr 86px;
+    gap: 10px;
+    align-items: center;
+    margin: 6px 0 2px;
+  }
+  .divider-label {
+    font-size: 9px;
+    text-align: right;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .divider-line {
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 4px, transparent 4px, transparent 8px);
+  }
   .bar-track {
     position: relative;
     height: var(--bar-h);
@@ -295,11 +310,11 @@
 
   /* ── Footer ── */
   footer {
-    padding: 24px 48px;
+    padding: 14px 48px;
     border-top: 1px solid var(--border);
     font-size: 10px;
     color: var(--text-dim);
-    line-height: 1.8;
+    line-height: 1.7;
   }
 
   @media (max-width: 700px) {
@@ -314,7 +329,7 @@
 <header>
   <div class="header-kicker">Global Economics · 2025–2026</div>
   <h1>Egg Prices &amp; <span>Minimum Wages</span><br>by Country</h1>
-  <p class="header-sub">79 countries compared by egg price per dozen, minimum wage per month, and egg-buying power (dozens purchasable on minimum wage). Hover any bar for details.</p>
+  <p class="header-sub">Top 5 &amp; bottom 5 countries per metric, plus Indonesia as a reference point. Hover any bar for full details.</p>
 </header>
 
 <div class="stats-strip">
@@ -332,7 +347,6 @@
     <button class="btn active" id="sort-wage" onclick="setSort('wage')">Min. Wage ↓</button>
     <button class="btn" id="sort-egg" onclick="setSort('egg')">Egg Price ↓</button>
     <button class="btn" id="sort-power" onclick="setSort('power')">Buying Power ↓</button>
-    <button class="btn" id="sort-country" onclick="setSort('country')">Country A–Z</button>
   </div>
   <div class="sep"></div>
   <span class="ctrl-label">Show</span>
@@ -480,7 +494,7 @@ const SORT_FNS = {
 
 function setSort(s) {
   currentSort = s;
-  ['wage','egg','power','country'].forEach(x => {
+  ['wage','egg','power'].forEach(x => {
     document.getElementById('sort-'+x).classList.toggle('active', x === s);
   });
   render();
@@ -551,15 +565,37 @@ function buildAxis(cfg) {
   }
 }
 
+function getSlice(sortedData) {
+  const top5 = sortedData.slice(0, 5);
+  const bot5 = sortedData.slice(-5);
+  const topIds = new Set(top5.map(d => d.c));
+  const botIds = new Set(bot5.map(d => d.c));
+  const idn = sortedData.find(d => d.c === 'Indonesia');
+  const idnInTop = topIds.has('Indonesia');
+  const idnInBot = botIds.has('Indonesia');
+  const showIdn = idn && !idnInTop && !idnInBot;
+  return { top5, bot5, idn, showIdn, topIds, botIds };
+}
+
 function render() {
-  const data = [...RAW].sort(SORT_FNS[currentSort]);
-  const cfg = getMetricConfig(currentMetric, data);
+  const sorted = [...RAW].sort(SORT_FNS[currentSort]);
+  // for axis/bar scale always use full dataset max
+  const cfg = getMetricConfig(currentMetric, RAW);
   buildAxis(cfg);
 
   const chart = document.getElementById('chart');
   chart.innerHTML = '';
 
-  data.forEach(d => {
+  const { top5, bot5, idn, showIdn } = getSlice(sorted);
+
+  function addDivider(label) {
+    const div = document.createElement('div');
+    div.className = 'divider-row';
+    div.innerHTML = `<div class="divider-label">${label}</div><div class="divider-line"></div><div></div>`;
+    chart.appendChild(div);
+  }
+
+  function addRow(d, rankType, rankNum) {
     const cColor = CONTINENTS[d.continent]?.color || '#888';
     const row = document.createElement('div');
     row.className = 'bar-row' + (hiddenContinents.has(d.continent) ? ' hidden-continent' : '');
@@ -568,8 +604,13 @@ function render() {
     const namePct = (cfg.getValue(d) / cfg.max * 100).toFixed(2);
     const eggPct = (d.e / cfg.max * 100).toFixed(2);
 
+    const badgeClass = rankType === 'top' ? 'rank-top' : rankType === 'bot' ? 'rank-bot' : 'rank-id';
+    const badgeLabel = rankType === 'top' ? `#${rankNum}` : rankType === 'bot' ? `#${rankNum}` : 'ID';
+
     row.innerHTML = `
-      <div class="country-name">${d.flag} ${d.c}</div>
+      <div class="country-name">
+        <span class="rank-badge ${badgeClass}">${badgeLabel}</span>${d.flag} ${d.c}
+      </div>
       <div class="bar-track">
         <div class="bar-fill" style="background:${cColor};width:0%" data-pct="${namePct}">
           ${currentMetric === 'both' ? `<div class="bar-fill-b" style="background:var(--accent);width:0%" data-pct="${eggPct}"></div>` : ''}
@@ -581,19 +622,32 @@ function render() {
     row.addEventListener('mouseenter', (ev) => showTooltip(ev, d, cColor));
     row.addEventListener('mousemove', moveTooltip);
     row.addEventListener('mouseleave', hideTooltip);
-
     chart.appendChild(row);
-  });
+  }
 
-  // Animate bars after paint
+  // Top 5
+  addDivider('TOP 5');
+  top5.forEach((d, i) => addRow(d, 'top', i + 1));
+
+  // Indonesia (middle spotlight)
+  if (showIdn) {
+    addDivider('SPOTLIGHT · INDONESIA');
+    const idnRank = sorted.findIndex(d => d.c === 'Indonesia') + 1;
+    addRow(idn, 'id', idnRank);
+  }
+
+  // Bottom 5
+  const botStartRank = sorted.length - 4;
+  addDivider('BOTTOM 5');
+  bot5.forEach((d, i) => addRow(d, 'bot', botStartRank + i));
+
+  // Animate bars
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       chart.querySelectorAll('.bar-fill').forEach(el => {
         el.style.width = el.dataset.pct + '%';
         const sub = el.querySelector('.bar-fill-b');
-        if (sub) {
-          setTimeout(() => sub.style.width = sub.dataset.pct + '%', 80);
-        }
+        if (sub) setTimeout(() => sub.style.width = sub.dataset.pct + '%', 80);
       });
     });
   });
